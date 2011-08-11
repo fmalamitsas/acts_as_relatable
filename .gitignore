@@ -1,0 +1,6 @@
+*.gem
+Gemfile.lock
+.bundle
+*.sqlite3
+spec/database.yml
+tmp/

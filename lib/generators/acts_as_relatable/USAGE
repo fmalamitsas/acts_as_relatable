@@ -1,0 +1,3 @@
+Description:
+  The acts_as_relatable:install generator creates a configuration file in config/initializer
+  directory. It creates a migration file for the Relationship model as well.

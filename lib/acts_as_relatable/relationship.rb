@@ -1,17 +1,16 @@
 module ActsAsRelatable
   class Relationship < ActiveRecord::Base
-
-    def self.configure(name, value = nil)
-      class_attribute(name)
-      self.send(:"#{name}=", value)
-    end
-
-    configure :relatables, ['Product', 'Tag', 'Shop']
+    # def self.configure(name, value = nil)
+    #   class_attribute(name)
+    #   self.send(:"#{name}=", value)
+    # end
+    #
+    # configure :relatables, ['Product', 'Tag', 'Shop']
 
     belongs_to :relator, :polymorphic => true, :foreign_key => :relator_id, :touch => true
     belongs_to :related, :polymorphic => true, :foreign_key => :related_id, :touch => true
 
-    self.relatables.each do |r|
+    ::ActsAsRelatable::RelatableModels.each do |r|
       self.class_eval do
         belongs_to "relator_#{r.underscore}".to_sym, :class_name => r.to_s, :foreign_key => :relator_id
         belongs_to "related_#{r.underscore}".to_sym, :class_name => r.to_s, :foreign_key => :related_id

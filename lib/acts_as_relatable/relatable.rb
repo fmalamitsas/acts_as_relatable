@@ -1,5 +1,6 @@
 module ActsAsRelatable
   module Relatable
+
     def self.included(base)
       base.extend(ClassMethods)
     end
@@ -7,13 +8,11 @@ module ActsAsRelatable
     module ClassMethods
       def acts_as_relatable(*args)
         # Create polymorphic associations
-        relatable_class_names = ActsAsRelatable::Relationship.relatables.to_a.flatten.compact.map{ |m| m.to_s }
 
         has_many :relationships, :as => :relator, :order => "created_at desc", :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy
         has_many :incoming_relationships, :as => :related, :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy
 
-
-        relatable_class_names.each do |rel|
+        ActsAsRelatable::RelatableModels.each do |rel|
 
           has_many "related_#{rel.tableize}",
                                     :through => :relationships,
@@ -71,7 +70,7 @@ module ActsAsRelatable
          if options.try(:[], :classes)
            classes = options[:classes].is_a?(String) ? [options[:classes]] : options[:classes]
          else
-           classes = Relationship.relatables
+           classes = ActsAsRelatable::RelatableModels
          end
          classes.each do |c|
            relations = self.send("related_#{c.underscore.pluralize}").limit(options[:limit] || 10)

@@ -1,7 +1,7 @@
 source "http://rubygems.org"
 
 gem "sqlite3"
-gem "shoulda", ">= 0"
-gem "bundler", "~> 1.0.0"
+gem "activerecord", :require => "active_record"
+gem "shoulda", "~> 2.11.0"
 
 gemspec

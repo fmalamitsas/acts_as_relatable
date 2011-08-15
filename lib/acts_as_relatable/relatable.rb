@@ -1,6 +1,5 @@
 module ActsAsRelatable
   module Relatable
-
     def self.included(base)
       base.extend(ClassMethods)
     end
@@ -12,7 +11,7 @@ module ActsAsRelatable
         has_many :relationships, :as => :relator, :order => "created_at desc", :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy
         has_many :incoming_relationships, :as => :related, :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy
 
-        ActsAsRelatable::RelatableModels.each do |rel|
+        ActsAsRelatable::Relatable::RelatableModels.each do |rel|
 
           has_many "related_#{rel.tableize}",
                                     :through => :relationships,
@@ -32,8 +31,7 @@ module ActsAsRelatable
       end
     end
 
-    module SingletonMethods
-    end
+    module SingletonMethods; end
 
     module InstanceMethods
 
@@ -59,7 +57,10 @@ module ActsAsRelatable
 
       # This method returns the relationship between self and another_object, or nil
       def relation some_object
-        Relationship.unscoped.where(:relator_id => self.id, :related_id => some_object.id, :relator_type => self.class.base_class.to_s, :related_type => some_object.class.base_class.to_s).first
+        Relationship.unscoped.where(:relator_id => self.id,
+                                    :related_id => some_object.id,
+                                    :relator_type => self.class.base_class.to_s,
+                                    :related_type => some_object.class.base_class.to_s).first
       end
 
       # This method returns relatable objects from a given Array of models
@@ -67,11 +68,7 @@ module ActsAsRelatable
       # {"Place" => [related_place1, related_place2], "Event" => [related_event1, related_event2]}
       def relateds(options = {})
          relateds = {}
-         if options.try(:[], :classes)
-           classes = options[:classes].is_a?(String) ? [options[:classes]] : options[:classes]
-         else
-           classes = ActsAsRelatable::RelatableModels
-         end
+         classes = options.try(:[], :classes) ? options[:classes] : ActsAsRelatable::Relatable::RelatableModels
          classes.each do |c|
            relations = self.send("related_#{c.underscore.pluralize}").limit(options[:limit] || 10)
            relateds = relateds.merge(c.underscore.pluralize.to_sym => relations) if relations.any?

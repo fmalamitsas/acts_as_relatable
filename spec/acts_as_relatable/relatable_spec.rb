@@ -88,11 +88,15 @@ describe ActsAsRelatable::Relatable do
         end
 
         it "objects from the specified classes only" do
-          @products[:product1].relateds(:classes => 'Product').should == {:products => [@products[:product3]]}
+          @products[:product1].relateds(:classes => ['Product']).should == {:products => [@products[:product3]]}
+        end
+
+        it "same results as related_products" do
+          @products[:product1].relateds(:classes => ['Product'])[:products].should.eql?(@products[:product1].related_products)
         end
 
         it "nil if the specified class doesn't have content" do
-          @products[:product1].relateds(:classes => 'Tag').should == {}
+          @products[:product1].relateds(:classes => ['Tag']).should == {}
         end
       end
     end

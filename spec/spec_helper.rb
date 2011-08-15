@@ -1,6 +1,14 @@
 require "rubygems"
 require "bundler"
 
+#Config
+module ActsAsRelatable
+  module Relatable
+    RelatableModels = ['Product', 'Shop', 'Tag']
+  end
+end
+#
+
 Bundler.require(:default)
 
 require 'active_support/all'
@@ -53,3 +61,5 @@ def clean_database!
 end
 
 clean_database!
+
+#ActsAsRelatable::Config.relatable_models = ['Product']

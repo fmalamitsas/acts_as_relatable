@@ -1,10 +1,6 @@
 require "active_record"
 require "active_record/version"
 
-module ActsAsRelatable
-  RelatableModels = ['Product', 'Shop', 'Tag'] #temp
-end
-
 require "acts_as_relatable/relatable"
 require "acts_as_relatable/relationship"
 

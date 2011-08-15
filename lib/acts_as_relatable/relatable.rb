@@ -1,5 +1,7 @@
 module ActsAsRelatable
+
   module Relatable
+
     def self.included(base)
       base.extend(ClassMethods)
     end

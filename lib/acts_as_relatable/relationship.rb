@@ -1,6 +1,5 @@
 module ActsAsRelatable
-  class Relationship < ActiveRecord::Base
-
+  class Relationship < ::ActiveRecord::Base
     belongs_to :relator, :polymorphic => true, :foreign_key => :relator_id, :touch => true
     belongs_to :related, :polymorphic => true, :foreign_key => :related_id, :touch => true
 

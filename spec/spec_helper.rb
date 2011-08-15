@@ -53,6 +53,10 @@ else
   raise "Please create #{database_yml} first to configure your database. Take a look at: #{database_yml}.sample"
 end
 
+#For generators
+require File.expand_path(File.join(File.dirname(__FILE__), '../lib/generators/acts_as_relatable/config_generator.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '../lib/generators/acts_as_relatable/migration_generator.rb'))
+
 def clean_database!
   models = [Product, Shop, Tag]
   models.each do |model|
@@ -61,5 +65,3 @@ def clean_database!
 end
 
 clean_database!
-
-#ActsAsRelatable::Config.relatable_models = ['Product']

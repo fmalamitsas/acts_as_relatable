@@ -1,1 +1,2 @@
-# This config file is useless for the moment but should be useful in a near future
+# Uncomment the following line if you want to add methods to the ActsAsRelatable::Relationship AR model
+#ActsAsRelatable::Relationship.send(:include, RelationshipExtension)

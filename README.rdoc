@@ -61,6 +61,53 @@ Followed by :
     #Destroying relationships (This instance method destroys both relationships if it's a both-sided one)
     @butter.destroy_relation_with @pancake
 
+== Relationship model extension
+
+You can add class/instance methods to the ActsAsRelatable::Relationship model
+by adding a module in your project. Here is how to do it :
+
+* Add a new file named relationship_extension.rb in your app/models directory.
+
+Let's call this module RelationshipExtension. The file may look like :
+
+  module RelationshipExtension
+    def self.included(klass)
+      klass.extend(ClassMethods).relate
+    end
+
+    module ClassMethods
+
+      def relate
+        include RelationshipExtension::InstanceMethods
+      end
+
+    end
+
+    module InstanceMethods
+      def to_s
+        "#{relator.class} #{relator.id} is related with #{related.class} #{related.id}"
+      end
+    end
+  end
+
+* In a shell, run :
+
+  r g acts_as_relatable:config
+
+It will create a file called acts_as_relatable.rb in config/initializers
+
+* Open this file and uncomment this line :
+
+  ActsAsRelatable::Relationship.send(:include, RelationshipExtension)
+
+I define a to_s instance method in this example. It is now a part of the ActsAsRelatable::Relationship model
+and you can use it like that :
+
+  ActsAsRelatable::Relationship.first.to_s
+
+it will return :
+
+  "Product 1 is related with Recipe 1"
 
 == Contributing to acts_as_relatable
 

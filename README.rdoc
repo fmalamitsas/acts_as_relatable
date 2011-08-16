@@ -26,6 +26,8 @@ Followed by :
 
 == Usage
 
+    # Model definition
+
     class Recipe < ActiveRecord::Base
       acts_as_relatable :product
     end
@@ -34,31 +36,42 @@ Followed by :
       acts_as_relatable :recipe
     end
 
+    # Create some entries
+
     @bread = Product.create(:name => "Bread")
     @butter = Product.create(:name => "Butter")
     @pancake = Recipe.create(:name => "Pancakes")
 
+
     #Creating relationships
+
     @butter.relates_to!(@pancake)   # #<ActsAsRelatable::Relationship id: 2, relator_id: 1, relator_type: "Recipe", related_id: 2, related_type: "Product">
     @bread.relates_to!(@butter)     # #<ActsAsRelatable::Relationship id: 4, relator_id: 2, relator_type: "Product", related_id: 1, related_type: "Product">
 
-    #By default, relationships are both-sided, it means that on the first line above, @butter is related to @pancake, but @pancake is also related to @butter.
-    #If you don't want/need this behaviour, you can pass false as a second argument to the relates_to! instance method :
+    # By default, relationships are both-sided, it means that on the first line above,
+    # @butter is related to @pancake, but @pancake is also related to @butter.
+    #If you don't want/need this behaviour, you can pass false as a second argument
+    # to the relates_to! instance method :
 
     @butter.relates_to!(@pancake, false)
 
 
     #Fetching relationships
+
     @butter.related_recipes         # [#<Recipe id: 1, name: "Pancakes">]
     @butter.related_products        # [#<Product id: 1, name: "Bread"]
+
 
     @butter.relateds                # {:recipes=>[#<Recipe id: 1, name: "Pancakes">], :products=>[#<Product id: 1, name: "Bread">]}
 
     #Testing relationships
+
     @butter.related_to? @bread      # true
     @bread.related_to? @pancake     # false
 
+
     #Destroying relationships (This instance method destroys both relationships if it's a both-sided one)
+
     @butter.destroy_relation_with @pancake
 
 == Relationship model extension
@@ -66,7 +79,7 @@ Followed by :
 You can add class/instance methods to the ActsAsRelatable::Relationship model
 by adding a module in your project. Here is how to do it :
 
-* Add a new file named relationship_extension.rb in your app/models directory.
+Add a new file named relationship_extension.rb in your app/models directory.
 
 Let's call this module RelationshipExtension. The file may look like :
 
@@ -90,13 +103,13 @@ Let's call this module RelationshipExtension. The file may look like :
     end
   end
 
-* In a shell, run :
+In a shell, run :
 
   r g acts_as_relatable:config
 
 It will create a file called acts_as_relatable.rb in config/initializers
 
-* Open this file and uncomment this line :
+Open this file and uncomment this line :
 
   ActsAsRelatable::Relationship.send(:include, RelationshipExtension)
 
@@ -117,7 +130,8 @@ it will return :
 * Start a feature/bugfix branch
 * Commit and push until you are happy with your contribution
 * Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+* Please try not to mess with the Rakefile, version, or history. If you want to have your own version,
+  or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
 
 == TODOS
 

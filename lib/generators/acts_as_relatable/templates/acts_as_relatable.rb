@@ -1,1 +1,1 @@
-# Useless now
+# This config file is useless for the moment but should be useful in a near future

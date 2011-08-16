@@ -1,32 +1,41 @@
 module ActsAsRelatable
 
-  module Relatable
 
+  module Relatable
     def self.included(base)
       base.extend(ClassMethods)
     end
 
     module ClassMethods
-      def acts_as_relatable(*args)
+
+      def acts_as_relatable(*relatable_models)
         # Create polymorphic associations
+        class_attribute :relatable_types
+
+        self.relatable_types = relatable_models.to_a.flatten.compact.map(&:to_sym)
 
         has_many :relationships, :as => :relator, :order => "created_at desc", :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy
         has_many :incoming_relationships, :as => :related, :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy
 
-        ActsAsRelatable::Relatable::RelatableModels.each do |rel|
+        relatable_types.each do |rel|
 
-          has_many "related_#{rel.tableize}",
+          has_many "related_#{rel.to_s.pluralize}",
                                     :through => :relationships,
-                                    :source => "related_#{rel.underscore}",
-                                    :class_name => rel,
-                                    :conditions => { 'relationships.related_type' => rel }
+                                    :source => "related_#{rel.to_s}",
+                                    :class_name => rel.to_s.classify,
+                                    :conditions => { 'relationships.related_type' => rel.to_s.classify }
 
-          has_many "relator_#{rel.tableize}",
+          has_many "relator_#{rel.to_s.pluralize}",
                                   :through => :incoming_relationships,
-                                  :source => "relator_#{rel.underscore}",
-                                  :class_name => rel,
-                                  :conditions => {'relationships.relator_type' => rel}
-         end
+                                  :source => "relator_#{rel.to_s}",
+                                  :class_name => rel.to_s.classify,
+                                  :conditions => {'relationships.relator_type' => rel.to_s.classify}
+
+          ActsAsRelatable::Relationship.belongs_to "relator_#{rel.to_s}".to_sym, :class_name => rel.to_s.classify, :foreign_key => :relator_id
+          ActsAsRelatable::Relationship.belongs_to "related_#{rel.to_s}".to_sym, :class_name => rel.to_s.classify, :foreign_key => :related_id
+
+
+        end
 
         include ActsAsRelatable::Relatable::InstanceMethods
         extend ActsAsRelatable::Relatable::SingletonMethods
@@ -48,8 +57,8 @@ module ActsAsRelatable
       def relates_to!(some_object, bothsided=true)
         return false if (self.related_to?(some_object) || self.eql?(some_object))
 
-        Relationship.unscoped.create(:related => some_object, :relator => self)
-        Relationship.unscoped.create(:related => self, :relator => some_object) if bothsided == true
+        ActsAsRelatable::Relationship.unscoped.create(:related => some_object, :relator => self)
+        ActsAsRelatable::Relationship.unscoped.create(:related => self, :relator => some_object) if bothsided == true
       end
 
       # This method returns true if self is already related with some_object
@@ -59,7 +68,7 @@ module ActsAsRelatable
 
       # This method returns the relationship between self and another_object, or nil
       def relation some_object
-        Relationship.unscoped.where(:relator_id => self.id,
+        ActsAsRelatable::Relationship.unscoped.where(:relator_id => self.id,
                                     :related_id => some_object.id,
                                     :relator_type => self.class.base_class.to_s,
                                     :related_type => some_object.class.base_class.to_s).first
@@ -70,10 +79,11 @@ module ActsAsRelatable
       # {"Place" => [related_place1, related_place2], "Event" => [related_event1, related_event2]}
       def relateds(options = {})
          relateds = {}
-         classes = options.try(:[], :classes) ? options[:classes] : ActsAsRelatable::Relatable::RelatableModels
+         classes = options.try(:[], :classes) ? options[:classes] : relatable_types
          classes.each do |c|
-           relations = self.send("related_#{c.underscore.pluralize}").limit(options[:limit] || 10)
-           relateds = relateds.merge(c.underscore.pluralize.to_sym => relations) if relations.any?
+           pluralized_rel = c.to_s.underscore.pluralize
+           relations = self.send("related_#{pluralized_rel}").limit(options[:limit] || 10)
+           relateds = relateds.merge(pluralized_rel.to_sym => relations) if relations.any?
          end
          relateds
       end

@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = "acts_as_relatable"
-  s.version     = "0.0.2"
+  s.version     = "0.0.3"
   s.author      = "Frédéric Malamitsas"
   s.email       = "fmalamitsas@gmail.com"
   s.homepage    = "http://github.com/fmalamitsas/acts_as_relatable"

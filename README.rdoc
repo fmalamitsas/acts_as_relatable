@@ -10,7 +10,7 @@ Gem installation :
 
 Or you can put it in your Gemfile :
 
-  gem "acts_as_relatable", "~> 0.0.2"
+  gem "acts_as_relatable", "~> 0.0.3"
 
 and then run :
 

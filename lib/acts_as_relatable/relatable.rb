@@ -12,7 +12,7 @@ module ActsAsRelatable
         # Create polymorphic associations
         class_attribute :relatable_types
 
-        self.relatable_types = relatable_models.to_a.flatten.compact.map(&:to_sym) << self.to_s.underscore
+        self.relatable_types = relatable_models.to_a.flatten.compact.map(&:to_sym) << self.to_s.underscore.to_sym
 
         has_many :relationships, :as => :relator, :order => "created_at desc", :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy
         has_many :incoming_relationships, :as => :related, :class_name => "ActsAsRelatable::Relationship", :dependent => :destroy

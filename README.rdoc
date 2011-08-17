@@ -48,7 +48,7 @@ Followed by :
     @mixer = Tool.create(:name => "Mixer")
 
 
-    #Creating relationships
+=== Creating relationships
 
     @butter.relates_to!(@pancake)   # #<ActsAsRelatable::Relationship id: 2, relator_id: 2, relator_type: "Product", related_id: 1, related_type: "Recipe">
     @pancake.relates_to!(@mixer)    # #<ActsAsRelatable::Relationship id: 3, relator_id: 1, relator_type: "Recipe", related_id: 1, related_type: "Tool">
@@ -62,7 +62,7 @@ Followed by :
     @butter.relates_to!(@pancake, false)
 
 
-    #Fetching relationships
+=== Fetching relationships
 
     @butter.related_recipes         # [#<Recipe id: 1, name: "Pancakes">]
     @butter.related_products        # [#<Product id: 1, name: "Bread"]
@@ -80,6 +80,10 @@ Followed by :
     #Destroying relationships (This instance method destroys both relationships if it's a both-sided one)
 
     @butter.destroy_relation_with @pancake
+
+=== Getting Relatable types
+
+    @pancake.relatable_types        #  [:product, :tool]
 
 == Configuration
 

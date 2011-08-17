@@ -34,6 +34,22 @@ describe ActsAsRelatable::Relatable do
       }
     }
 
+    context :relatable_types do
+
+      it "for product" do
+        @products[:product1].relatable_types.should == [:shop, :tag, :product]
+      end
+
+      it "for shop" do
+        @shops[:shop1].relatable_types.should == [:tag, :product, :shop]
+      end
+
+      it "for tag" do
+        @tag.relatable_types.should == [:product, :shop, :tag]
+      end
+
+    end
+
     context :relates_to! do
 
       context :both_sided do

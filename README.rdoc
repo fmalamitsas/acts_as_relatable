@@ -10,7 +10,7 @@ Gem installation :
 
 Or you can put it in your Gemfile :
 
-  gem "acts_as_relatable"
+  gem "acts_as_relatable", "~> 0.0.2"
 
 and then run :
 
@@ -28,7 +28,7 @@ Followed by :
 
     # Model definition
 
-    class Recipe < ActiveRecord::Base
+    class Tool < ActiveRecord::Base
       acts_as_relatable :product
     end
 
@@ -36,21 +36,27 @@ Followed by :
       acts_as_relatable :recipe
     end
 
+    class Recipe < ActiveRecord::Base
+      acts_as_relatable :product, :tool
+    end
+
     # Create some entries
 
     @bread = Product.create(:name => "Bread")
     @butter = Product.create(:name => "Butter")
     @pancake = Recipe.create(:name => "Pancakes")
+    @mixer = Tool.create(:name => "Mixer")
 
 
     #Creating relationships
 
-    @butter.relates_to!(@pancake)   # #<ActsAsRelatable::Relationship id: 2, relator_id: 1, relator_type: "Recipe", related_id: 2, related_type: "Product">
-    @bread.relates_to!(@butter)     # #<ActsAsRelatable::Relationship id: 4, relator_id: 2, relator_type: "Product", related_id: 1, related_type: "Product">
+    @butter.relates_to!(@pancake)   # #<ActsAsRelatable::Relationship id: 2, relator_id: 2, relator_type: "Product", related_id: 1, related_type: "Recipe">
+    @pancake.relates_to!(@mixer)    # #<ActsAsRelatable::Relationship id: 3, relator_id: 1, relator_type: "Recipe", related_id: 1, related_type: "Tool">
+    @bread.relates_to!(@butter)     # #<ActsAsRelatable::Relationship id: 4, relator_id: 1, relator_type: "Product", related_id: 2, related_type: "Product">
 
     # By default, relationships are both-sided, it means that on the first line above,
     # @butter is related to @pancake, but @pancake is also related to @butter.
-    #If you don't want/need this behaviour, you can pass false as a second argument
+    # If you don't want/need this behaviour, you can pass false as a second argument
     # to the relates_to! instance method :
 
     @butter.relates_to!(@pancake, false)
@@ -63,6 +69,7 @@ Followed by :
 
 
     @butter.relateds                # {:recipes=>[#<Recipe id: 1, name: "Pancakes">], :products=>[#<Product id: 1, name: "Bread">]}
+    @pancake.relateds               # {:tools=>[#<Tool id: 1, name: "Mixer">], :products=>[#<Product id: 2, name: "Butter">]}
 
     #Testing relationships
 
@@ -73,6 +80,30 @@ Followed by :
     #Destroying relationships (This instance method destroys both relationships if it's a both-sided one)
 
     @butter.destroy_relation_with @pancake
+
+== Configuration
+
+To create the acts_as_relatable config file, open a shell and run :
+
+  r g acts_as_relatable:config
+
+It will create a file called acts_as_relatable.rb in config/initializers
+
+== Relationship Shortcut
+
+By default, the Relationship model is accessible with :
+
+  ActsAsRelatable::Relationship
+  ActsAsRelatable::Relationship.count
+
+If you want to access it directly with
+
+  Relationship
+  Relationship.first
+
+Just uncomment this line in the config file (see Configuration section above to see how to generate it)
+
+  Relationship = ActsAsRelatable::Relationship
 
 == Relationship model extension
 
@@ -103,11 +134,8 @@ Let's call this module RelationshipExtension. The file may look like :
     end
   end
 
-In a shell, run :
 
-  r g acts_as_relatable:config
-
-It will create a file called acts_as_relatable.rb in config/initializers
+Generate the config file (see Configuration section above to see how to generate it)
 
 Open this file and uncomment this line :
 

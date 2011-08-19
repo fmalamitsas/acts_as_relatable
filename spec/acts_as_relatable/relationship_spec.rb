@@ -12,6 +12,14 @@ describe ActsAsRelatable::Relationship do
     @shop = Shop.create(:name => 'shop1')
   }
 
+  context :custom_validations do
+    it "doesn't relates when related is self" do
+      expect {
+        @shop.relates_to!(@shop)
+      }.to_not change(ActsAsRelatable::Relationship, :count)
+    end
+  end
+
   context :associations do
     before { @product.relates_to! @shop }
 

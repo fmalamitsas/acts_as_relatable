@@ -61,6 +61,9 @@ Followed by :
 
     @butter.relates_to!(@pancake, false)
 
+    # You can also create relationships with the ActsAsRelatable::Relationship class method
+
+    ActsAsRelatable::Relationship.make_between(@butter, @pancake)  # Passing false as a third argument make it "one sided"
 
 === Fetching relationships
 

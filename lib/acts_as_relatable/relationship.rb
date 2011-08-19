@@ -7,5 +7,18 @@ module ActsAsRelatable
     validates :relator_type, :presence => true
     validates :related_id, :presence => true
     validates :related_type, :presence => true
+    validate :self_relation
+
+    # This method relates two object together
+     def self.make_between(relator, related, bothsided=true)
+       relator.relates_to!(related, bothsided)
+     end
+
+     protected
+
+     # It's impossible to create a relation with self as related object.
+     def self_relation
+       errors.add(:base, "could not create a relation that links to the same element!") if related == relator
+     end
   end
 end

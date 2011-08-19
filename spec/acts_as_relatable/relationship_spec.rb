@@ -7,13 +7,13 @@ describe ActsAsRelatable::Relationship do
   it { should validate_presence_of :related_id }
   it { should validate_presence_of :related_type }
 
-  context :associations do
-    before {
-      @product = Product.create(:name => 'product1')
-      @shop = Shop.create(:name => 'shop1')
+  before {
+    @product = Product.create(:name => 'product1')
+    @shop = Shop.create(:name => 'shop1')
+  }
 
-      @product.relates_to! @shop
-    }
+  context :associations do
+    before { @product.relates_to! @shop }
 
     context :relator do
       it "returns the object that made the relation" do
@@ -28,4 +28,20 @@ describe ActsAsRelatable::Relationship do
     end
   end
 
+
+  context :make_between do
+    context "relates two objects" do
+      it "both sided by default" do
+        expect {
+          ActsAsRelatable::Relationship.make_between(@product, @shop)
+        }.to change(ActsAsRelatable::Relationship, :count).by(2)
+      end
+
+      it "only one side" do
+        expect {
+          ActsAsRelatable::Relationship.make_between(@product, @shop, false)
+        }.to change(ActsAsRelatable::Relationship, :count).by(1)
+      end
+    end
+  end
 end

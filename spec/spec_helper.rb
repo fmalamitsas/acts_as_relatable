@@ -32,6 +32,7 @@ if File.exists?(database_yml)
     ActiveRecord::Base.establish_connection(config)
   end
 
+  Dir.mkdir("./tmp") unless File.directory?("./tmp")
   ActiveRecord::Base.logger = Logger.new(File.join(File.dirname(__FILE__), "../tmp/debug.log"))
   ActiveRecord::Base.default_timezone = :utc
 

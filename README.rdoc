@@ -8,9 +8,9 @@ Gem installation :
 
   gem install acts_as_relatable
 
-Or you can put it in your Gemfile :
+Or in your Gemfile :
 
-  gem "acts_as_relatable", "~> 0.0.4"
+  gem "acts_as_relatable", "~> 0.0.5"
 
 and then run :
 

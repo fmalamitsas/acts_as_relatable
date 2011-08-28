@@ -10,8 +10,8 @@ module ActsAsRelatable
     validate  :self_relation
 
     # This method relates two object together
-     def self.make_between(relator, related, bothsided=true)
-       relator.relates_to!(related, bothsided)
+     def self.make_between(relator, related, bothsided=true, strength=nil)
+       relator.relates_to!(related, bothsided, strength)
      end
 
      protected

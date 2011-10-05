@@ -54,11 +54,11 @@ module ActsAsRelatable
       #   user = User.find 1
       #   place = Place.find 1
       #   user.relate_to! place
-      def relates_to!(some_object, bothsided=true)
+      def relates_to!(some_object, bothsided=true, strength=nil)
         return false if (self.related_to?(some_object) || self.eql?(some_object))
 
-        ActsAsRelatable::Relationship.unscoped.create(:related => some_object, :relator => self)
-        ActsAsRelatable::Relationship.unscoped.create(:related => self, :relator => some_object) if bothsided == true
+        ActsAsRelatable::Relationship.unscoped.create(:related => some_object, :relator => self, :strength => strength)
+        ActsAsRelatable::Relationship.unscoped.create(:related => self, :relator => some_object, :strength => strength) if bothsided == true
       end
 
       # This method returns true if self is already related with some_object
@@ -77,12 +77,14 @@ module ActsAsRelatable
       # This method returns relatable objects from a given Array of models
       # Exemple : @category.relateds(:classes => ['Place', 'Event']) will return
       # {"Place" => [related_place1, related_place2], "Event" => [related_event1, related_event2]}
+      # :strength => 'some_strength' will return all relateds with strength = 'some_strength'
       def relateds(options = {})
          relateds = {}
-         classes = options.try(:[], :classes) ? options[:classes] : relatable_types
+         classes = options[:classes] || relatable_types
          classes.each do |c|
            pluralized_rel = c.to_s.underscore.pluralize
            relations = self.send("related_#{pluralized_rel}").limit(options[:limit] || 10)
+           relations = relations.where(:strength => options[:strength]) if options[:strength]
            relateds = relateds.merge(pluralized_rel.to_sym => relations) if relations.any?
          end
          relateds
